@@ -5,6 +5,7 @@ package org.javanibal.quiz.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class Pregunta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @NotBlank(message = "El enunciado es obligatorio")
     private String enunciado;
 
     @ManyToOne

@@ -6,26 +6,32 @@ services:
     container_name: quiz-db
     restart: always
     environment:
-      POSTGRES_DB: quiz_backend_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: ${DB_NAME:-quiz_backend_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
     ports:
       - "5433:5432"
     volumes:
       - quiz-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-quiz_backend_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   app:
     build: .
     container_name: quiz-backend
     restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "8081:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/quiz_backend_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: admin
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-quiz_backend_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-admin}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
       SPRING_JACKSON_DESERIALIZATION_FAIL_ON_UNKNOWN_PROPERTIES: "false"
