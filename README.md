@@ -1,25 +1,22 @@
 # Quiz Backend — Spring Boot REST API
 
-API REST para la gestión de quizzes con preguntas y respuestas, desarrollada siguiendo una arquitectura en capas con Spring Boot y persistencia en PostgreSQL.
+API REST para la gestión de quizzes con preguntas y respuestas, construida con Spring Boot y PostgreSQL.
+Diseñada para ser consumida por un cliente **Angular** como parte de un stack Java + Angular.
 
 ## Stack tecnológico
 
 - **Java 21** · **Spring Boot 3.5.6**
 - **Spring Data JPA** + **Hibernate** — relaciones `@OneToMany` / `@ManyToOne` bidireccionales
 - **PostgreSQL 15**
-- **Lombok** · **Jackson**
-- **Docker** + **Docker Compose**
+- **Lombok** · **Jackson** · **Spring Validation**
+- **Docker** + **Docker Compose** con healthcheck
 - **Testcontainers** — tests de integración con PostgreSQL real
 
 ## Arquitectura
 
-Arquitectura en capas estándar de Spring Boot:
-
 ```
 Controller  →  Service  →  Repository  →  Entity (JPA)
 ```
-
-Tres recursos con sus relaciones:
 
 ```
 Quiz (1) ──── (N) Pregunta (1) ──── (N) Respuesta
@@ -29,17 +26,15 @@ Quiz (1) ──── (N) Pregunta (1) ──── (N) Respuesta
 
 ```bash
 cp .env.example .env
-docker-compose up
+mvn clean package -DskipTests
+docker-compose up --build
 ```
 
-La aplicación queda disponible en `http://localhost:8081`.
-
-> El servicio de base de datos incluye healthcheck: la app espera a que PostgreSQL esté listo antes de arrancar.
+Disponible en `http://localhost:8081`. PostgreSQL se levanta con healthcheck — la app espera a que la BD esté lista antes de arrancar.
 
 ## API Endpoints
 
-### Quizzes `/api/quizzes`
-
+### `/api/quizzes`
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | `GET` | `/api/quizzes` | Listar todos |
@@ -48,8 +43,7 @@ La aplicación queda disponible en `http://localhost:8081`.
 | `PUT` | `/api/quizzes/{id}` | Actualizar |
 | `DELETE` | `/api/quizzes/{id}` | Eliminar |
 
-### Preguntas `/api/preguntas`
-
+### `/api/preguntas`
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | `GET` | `/api/preguntas` | Listar todas |
@@ -58,8 +52,7 @@ La aplicación queda disponible en `http://localhost:8081`.
 | `PUT` | `/api/preguntas/{id}` | Actualizar |
 | `DELETE` | `/api/preguntas/{id}` | Eliminar |
 
-### Respuestas `/api/respuestas`
-
+### `/api/respuestas`
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | `GET` | `/api/respuestas` | Listar todas |
@@ -75,3 +68,10 @@ La aplicación queda disponible en `http://localhost:8081`.
 | `DB_URL` | URL de conexión JDBC | `jdbc:postgresql://localhost:5433/quiz_backend_db` |
 | `DB_USER` | Usuario PostgreSQL | `postgres` |
 | `DB_PASSWORD` | Contraseña PostgreSQL | — |
+
+## Integración con Angular
+
+El backend está preparado para ser consumido desde Angular (`http://localhost:4200`).
+Próximamente: configuración CORS, Swagger/OpenAPI y endpoint de sesión de quiz.
+
+> Contexto completo del proyecto, deuda técnica y roadmap en [`docs/root.md`](docs/root.md)

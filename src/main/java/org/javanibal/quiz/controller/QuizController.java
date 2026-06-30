@@ -1,6 +1,7 @@
 package org.javanibal.quiz.controller;
 
 
+import jakarta.validation.Valid;
 import org.javanibal.quiz.model.Quiz;
 import org.javanibal.quiz.service.QuizService;
 import org.springframework.http.ResponseEntity;
@@ -33,12 +34,12 @@ public class QuizController {
     }
 
     @PostMapping
-    public Quiz create(@RequestBody Quiz quiz){
+    public Quiz create(@Valid @RequestBody Quiz quiz){
         return quizService.save(quiz);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Quiz> update(@PathVariable Integer id, @RequestBody Quiz quiz){
+    public ResponseEntity<Quiz> update(@PathVariable Integer id, @Valid @RequestBody Quiz quiz){
         return quizService.findById(id)
                 .map(existing -> {
                     quiz.setId(id);
