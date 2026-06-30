@@ -1,122 +1,77 @@
-# Quiz
+# Quiz Backend — Spring Boot REST API
 
+API REST para la gestión de quizzes con preguntas y respuestas, desarrollada siguiendo una arquitectura en capas con Spring Boot y persistencia en PostgreSQL.
 
-## Descripción del Proyecto
-API REST desarrollada en Spring Boot para la gestión de quizzes educativos.
-Este sistema permite crear, administrar y realizar trivias con preguntas de opción múltiple.
-Ideal para plataformas de aprendizaje, evaluaciones educativas.
+## Stack tecnológico
 
-### Características Principales
+- **Java 21** · **Spring Boot 3.5.6**
+- **Spring Data JPA** + **Hibernate** — relaciones `@OneToMany` / `@ManyToOne` bidireccionales
+- **PostgreSQL 15**
+- **Lombok** · **Jackson**
+- **Docker** + **Docker Compose**
+- **Testcontainers** — tests de integración con PostgreSQL real
 
-- **Gestión de Quizzes:** Crear, leer, actualizar y eliminar quizzes
-- **Preguntas Múltiples:** Cada quiz contiene múltiples preguntas
-- **Respuestas de Opción Múltiple:** Opciones A, B, C, D con una respuesta correcta
-- **Categorización:** Organización por categorías educativas
-- **Base de Datos PostgreSQL:** Persistencia de datos
-- **Dockerizado:** Despliegue con Docker Compose
-- **API REST:** Endpoints completos para integración frontend
+## Arquitectura
 
-### Arquitectura del Proyecto -> MVC
-
-``` 
-quiz-backend-springboot/
-├── 📁 config/
-├── 📁 controller/ 
-├── 📁 model/ 
-├── 📁 repository/ 
-├── 📁 service/ 
-├── 📁 enums/ 
-└── 📄 application.properties
-``` 
-
-### Categorías Disponibles
-
-- **FUNDAMENTOS** - Conceptos básicos
-- **OBJETOS** - Programación orientada a objetos
-- **HERENCIA** - Herencia y composición
-- **POLIMORFISMO** - Polimorfismo e interfaces
-
----
-
-### Tecnologías Utilizadas
-
-- Java 21 
-- Spring Boot 3.x
-- Spring Data JPA
-- PostgreSQL
-- Lombok
-- Docker
-- Maven
-
----
-
-### Pre-Requisitos
-
-- Java 21 o superior
-- PostgreSQL 15
-- Maven 3.6+
-- Docker 
-
---- 
-
-### Configuración e Instalación
+Arquitectura en capas estándar de Spring Boot:
 
 ```
- La aplicación estará disponible en: http://localhost:8080
- ```
-
-###  Clonar 
-
-``` 
-  git clone https://github.com/tu-usuario/quiz-backend-springboot.git
-  cd quiz-backend-springboot
-  docker-compose up --build
+Controller  →  Service  →  Repository  →  Entity (JPA)
 ```
 
-```
- # Ejecutar PostgreSQL en puerto 5433
-   docker run --name quiz-db -e POSTGRES_DB=quiz_backend_db \
-   -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=admin \
-   -p 5433:5432 -d postgres:15
- ```
+Tres recursos con sus relaciones:
 
 ```
-# Ejecutar y compilar
-  mvn clean package
-  java -jar target/quiz-0.0.1-SNAPSHOT.jar
+Quiz (1) ──── (N) Pregunta (1) ──── (N) Respuesta
 ```
 
-#### Quizzes
-```
-GET /api/quizzes - Obtener todos los quizzes
-GET /api/quizzes/{id} - Obtener quiz por ID
-POST /api/quizzes - Crear nuevo quiz
-PUT /api/quizzes/{id} - Actualizar quiz
-DELETE /api/quizzes/{id} - Eliminar quiz
-```
---- 
-#### Preguntas
-```
-GET /api/preguntas - Obtener todas las preguntas
-GET /api/preguntas/{id} - Obtener pregunta por ID
-POST /api/preguntas - Crear nueva pregunta
-PUT /api/preguntas/{id} - Actualizar pregunta
-DELETE /api/preguntas/{id} - Eliminar pregunta
-```
----
-#### Respuestas
+## Levantar el proyecto
 
+```bash
+cp .env.example .env
+docker-compose up
 ```
-GET /api/respuestas - Obtener todas las respuestas
-GET /api/respuestas/{id} - Obtener respuesta por ID
-POST /api/respuestas - Crear nueva respuesta
-PUT /api/respuestas/{id} - Actualizar respuesta
-DELETE /api/respuestas/{id} - Eliminar respuesta
-```
----
-### Autor: Anibal Solano
 
-- GitHub: [@javAnibal](https://github.com/javAnibal)
-- LinkedIn: [Mi perfil](https://www.linkedin.com/in/https://www.linkedin.com/in/anibal-solano-f//)
-- Email: [a88anibal@gmail.com](mailto:a88anibal@gmail.com)
+La aplicación queda disponible en `http://localhost:8081`.
 
+> El servicio de base de datos incluye healthcheck: la app espera a que PostgreSQL esté listo antes de arrancar.
+
+## API Endpoints
+
+### Quizzes `/api/quizzes`
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/quizzes` | Listar todos |
+| `GET` | `/api/quizzes/{id}` | Obtener por ID |
+| `POST` | `/api/quizzes` | Crear |
+| `PUT` | `/api/quizzes/{id}` | Actualizar |
+| `DELETE` | `/api/quizzes/{id}` | Eliminar |
+
+### Preguntas `/api/preguntas`
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/preguntas` | Listar todas |
+| `GET` | `/api/preguntas/{id}` | Obtener por ID |
+| `POST` | `/api/preguntas` | Crear |
+| `PUT` | `/api/preguntas/{id}` | Actualizar |
+| `DELETE` | `/api/preguntas/{id}` | Eliminar |
+
+### Respuestas `/api/respuestas`
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/respuestas` | Listar todas |
+| `GET` | `/api/respuestas/{id}` | Obtener por ID |
+| `POST` | `/api/respuestas` | Crear |
+| `PUT` | `/api/respuestas/{id}` | Actualizar |
+| `DELETE` | `/api/respuestas/{id}` | Eliminar |
+
+## Variables de entorno
+
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `DB_URL` | URL de conexión JDBC | `jdbc:postgresql://localhost:5433/quiz_backend_db` |
+| `DB_USER` | Usuario PostgreSQL | `postgres` |
+| `DB_PASSWORD` | Contraseña PostgreSQL | — |
