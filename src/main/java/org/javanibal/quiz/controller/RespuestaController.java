@@ -1,5 +1,6 @@
 package org.javanibal.quiz.controller;
 
+import jakarta.validation.Valid;
 import org.javanibal.quiz.model.Respuesta;
 import org.javanibal.quiz.service.RespuestaService;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +33,12 @@ public class RespuestaController {
     }
 
     @PostMapping
-    public Respuesta create(@RequestBody Respuesta respuesta) {
+    public Respuesta create(@Valid @RequestBody Respuesta respuesta) {
         return respuestaService.save(respuesta);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Respuesta> update(@PathVariable Integer id, @RequestBody Respuesta respuesta) {
+    public ResponseEntity<Respuesta> update(@PathVariable Integer id, @Valid @RequestBody Respuesta respuesta) {
         return respuestaService.findById(id)
                 .map(existing -> {
                     respuesta.setId(id);
