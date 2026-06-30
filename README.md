@@ -74,4 +74,3 @@ Disponible en `http://localhost:8081`. PostgreSQL se levanta con healthcheck —
 El backend está preparado para ser consumido desde Angular (`http://localhost:4200`).
 Próximamente: configuración CORS, Swagger/OpenAPI y endpoint de sesión de quiz.
 
-> Contexto completo del proyecto, deuda técnica y roadmap en [`docs/root.md`](docs/root.md)
