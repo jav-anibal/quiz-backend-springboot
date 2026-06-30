@@ -1,126 +1,77 @@
-# Quiz Backend - Spring Boot
+# Quiz Backend — Spring Boot REST API
 
-Aplicación backend para gestionar quizzes construida con Spring Boot 3.5.6 y PostgreSQL.
+API REST para la gestión de quizzes con preguntas y respuestas, desarrollada siguiendo una arquitectura en capas con Spring Boot y persistencia en PostgreSQL.
 
-## Requisitos
+## Stack tecnológico
 
-- Java 21
-- Maven 3.9+
-- Docker & Docker Compose
-- PostgreSQL 15 (para desarrollo local sin Docker)
+- **Java 21** · **Spring Boot 3.5.6**
+- **Spring Data JPA** + **Hibernate** — relaciones `@OneToMany` / `@ManyToOne` bidireccionales
+- **PostgreSQL 15**
+- **Lombok** · **Jackson**
+- **Docker** + **Docker Compose**
+- **Testcontainers** — tests de integración con PostgreSQL real
 
-## Configuración de Ambiente
+## Arquitectura
 
-### Variables de Entorno
+Arquitectura en capas estándar de Spring Boot:
 
-El proyecto usa variables de entorno para la configuración:
+```
+Controller  →  Service  →  Repository  →  Entity (JPA)
+```
 
-- `DB_NAME`: Nombre de la base de datos (default: `quiz_backend_db`)
-- `DB_USER`: Usuario de PostgreSQL (default: `postgres`)
-- `DB_PASSWORD`: Contraseña de PostgreSQL (default: `admin`)
+Tres recursos con sus relaciones:
 
-### Desarrollo Local
+```
+Quiz (1) ──── (N) Pregunta (1) ──── (N) Respuesta
+```
 
-1. Copiar `.env.example` a `.env`:
+## Levantar el proyecto
+
 ```bash
 cp .env.example .env
-```
-
-2. Actualizar valores en `.env` según tu ambiente
-
-3. Compilar el proyecto:
-```bash
-mvn clean package -DskipTests
-```
-
-## Ejecutar con Docker Compose
-
-La forma más fácil es usar `docker-compose`, que levanta tanto la BD como la aplicación:
-
-```bash
 docker-compose up
 ```
 
-Esto:
-- Levanta PostgreSQL en `localhost:5433`
-- Levanta la aplicación en `localhost:8081`
-- Lee las credenciales desde `.env`
+La aplicación queda disponible en `http://localhost:8081`.
 
-Para detener:
-```bash
-docker-compose down
-```
-
-## Ejecutar con Docker (manual)
-
-### Construcción de imagen
-
-```bash
-docker build -t quiz-backend:latest .
-```
-
-### Ejecutar contenedor
-
-Con archivo `.env`:
-```bash
-docker run --env-file .env -p 8080:8080 quiz-backend:latest
-```
-
-Con variables individuales:
-```bash
-docker run \
-  -e DB_NAME=quiz_backend_db \
-  -e DB_USER=postgres \
-  -e DB_PASSWORD=admin \
-  -p 8080:8080 \
-  quiz-backend:latest
-```
+> El servicio de base de datos incluye healthcheck: la app espera a que PostgreSQL esté listo antes de arrancar.
 
 ## API Endpoints
 
-La aplicación se ejecuta en `http://localhost:8081` (docker-compose) o `http://localhost:8080` (docker run)
+### Quizzes `/api/quizzes`
 
-### Quizzes
-- `GET /api/quizzes` - Obtener todos los quizzes
-- `GET /api/quizzes/{id}` - Obtener quiz por ID
-- `POST /api/quizzes` - Crear nuevo quiz
-- `PUT /api/quizzes/{id}` - Actualizar quiz
-- `DELETE /api/quizzes/{id}` - Eliminar quiz
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/quizzes` | Listar todos |
+| `GET` | `/api/quizzes/{id}` | Obtener por ID |
+| `POST` | `/api/quizzes` | Crear |
+| `PUT` | `/api/quizzes/{id}` | Actualizar |
+| `DELETE` | `/api/quizzes/{id}` | Eliminar |
 
-## Estructura del Proyecto
+### Preguntas `/api/preguntas`
 
-```
-src/
-  main/
-    java/org/javanibal/quiz/
-      config/          - Configuración
-      controller/      - REST Controllers
-      model/           - Entidades JPA
-      repository/      - Data Access
-      service/         - Lógica de negocio
-      enums/           - Enumeraciones
-    resources/
-      application.properties
-  test/
-    java/org/javanibal/quiz/
-```
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/preguntas` | Listar todas |
+| `GET` | `/api/preguntas/{id}` | Obtener por ID |
+| `POST` | `/api/preguntas` | Crear |
+| `PUT` | `/api/preguntas/{id}` | Actualizar |
+| `DELETE` | `/api/preguntas/{id}` | Eliminar |
 
-## Notas de Seguridad
+### Respuestas `/api/respuestas`
 
-- El archivo `.env` contiene credenciales locales y NO debe commiterse (está en `.gitignore`)
-- Usar `.env.example` como referencia para nuevas configuraciones
-- Para producción, usar variables de entorno seguras del platform de deployment (Heroku, AWS, etc.)
-- Las credenciales por defecto (`admin`) son SOLO para desarrollo
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/respuestas` | Listar todas |
+| `GET` | `/api/respuestas/{id}` | Obtener por ID |
+| `POST` | `/api/respuestas` | Crear |
+| `PUT` | `/api/respuestas/{id}` | Actualizar |
+| `DELETE` | `/api/respuestas/{id}` | Eliminar |
 
-## Troubleshooting
+## Variables de entorno
 
-### Puerto 5433 ya está en uso
-```bash
-docker-compose down  # Detener todos los contenedores
-# o cambiar puerto en docker-compose.yml
-```
-
-### Conexión rechazada a la BD
-- Verificar que PostgreSQL esté corriendo: `docker ps`
-- Verificar credenciales en `.env`
-- Esperar a que la BD inicie (puede tomar 5-10 segundos)
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `DB_URL` | URL de conexión JDBC | `jdbc:postgresql://localhost:5433/quiz_backend_db` |
+| `DB_USER` | Usuario PostgreSQL | `postgres` |
+| `DB_PASSWORD` | Contraseña PostgreSQL | — |
